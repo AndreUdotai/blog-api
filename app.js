@@ -12,8 +12,8 @@ import 'dotenv/config'
 var app = express();
 app.use(cors());
 
-var indexRouter = require('./routes/index');
-var usersRouter = require('./routes/users');
+var blogRouter = require('./routes/blog');
+var adminRouter = require('./routes/admin');
 
 // Set up mongoose connection
 // const mongoose = require("mongoose");
@@ -35,8 +35,8 @@ app.use(express.urlencoded({ extended: false }));
 app.use(cookieParser());
 app.use(express.static(path.join(__dirname, 'public')));
 
-app.use('/', indexRouter);
-app.use('/users', usersRouter);
+app.use('/', blogRouter);
+app.use('/admin', adminRouter);
 
 // catch 404 and forward to error handler
 app.use(function(req, res, next) {
