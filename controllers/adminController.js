@@ -90,9 +90,7 @@ exports.adminUser_list = (req, res, next) => {
             if (err) {
                 return next(err);
             }
-            res.status(200).json({
-                users: users
-            })
+            res.status(200).json(users)
         })
 }
 
@@ -102,21 +100,147 @@ exports.adminUser_detail = (req, res, next) => {
             if (err) {
                 return next(err);
             }
-            res.status(200).json({
-                user: user
-            })
+            res.status(200).json(user)
         })
-    // res.send("Hala Ronaldo!");
 }
 
-// adminUser_update_post
-// adminUser_login_get
-// adminUser_login_post
-// adminUser_logout
-// adminPost_create_post
-// adminPost_list
-// adminPost_update_get
-// admin_update_post
+exports.adminUser_update_post = [
+    //Validate and sanitize fields.
+    body('username')
+        .trim()
+        .isLength({ min: 1 })
+        .withMessage('Username must be specified'),
+    body('password')
+        .trim()
+        .isLength({ min: 6 })
+        .withMessage('Password must be at least 6 characters long'),
+
+    // Process request after validation and sanitization.
+    (req, res, next) => {
+        // Extract the validation errors from a request
+        const errors = validationResult(req);
+
+        // Create a User object with trimmed and old id.
+        const user = new User({
+            username: req.body.username,
+            password: req.body.password,
+            _id: req.params.id,
+        });
+
+        if (!errors.isEmpty()) {
+            // There are errors, render form again with sanitized values/error messages.
+            res.status(400).json({
+                user: user,
+                errors: errors,
+            });
+            return;
+        } else {
+            User.findByIdAndUpdate(user._id, user, {new: true}, (err, updatedUser) => {
+                if (err) {
+                    return next(err);
+                }
+                res.status(200).json(updatedUser);
+            });
+        }
+    }
+];
+
+exports.adminUser_login = (req, res) => {
+    const { username, password } = req.body;
+    if (!username || !password) {
+        res.status(400).json(req.body);
+    } else {
+        passport.authenticate('local', {
+
+        })(req, res);
+    }
+}
+
+exports.adminUser_logout = (req, res, next) => {
+    req.logout(function (err) {
+        if (err) {
+            return next(err);
+        }
+        res.status(200).json({
+            message: "Successfully signed out"
+        })
+    })
+};
+
+// POST
+// title, post, published, comments, timestamp
+
+exports.adminPost_create = [
+    body('title', 'Title must not be empty.').trim().isLength({ min: 1 }),
+    body('post', 'Post must not be empty.').trim().isLength({ min: 1 }),
+    
+    (req, res, next) => {
+        const errors = validationResult(req);
+
+        const post = new Post({
+            title: req.body.title,
+            post: req.body.post,
+        });
+
+        if(!errors.isEmpty()) {
+            res.status(400).json({
+                post: post,
+                errors: errors,
+            });
+            return;
+        } else {
+            post.save((err) => {
+                if (err) {
+                    return next(err);
+                }
+                res.status(200).json(post);
+            })
+        }
+    }
+];
+
+exports.adminPost_list = (req, res, next) => {
+    Post.find({})
+        .populate('comments')
+        .exec((err, posts) => {
+            if (err) {
+                return next(err);
+            }
+            res.status(200).json(posts);
+        })
+}
+
+exports.adminPost_update = [
+    body('title', 'Title must not be empty.').trim().isLength({ min: 1 }),
+    body('post', 'Post must not be empty.').trim().isLength({ min: 1 }),
+
+    (req, res, next) => {
+        const errors = validationResult(req);
+
+        const post = new Post({
+            title: req.body.title,
+            post: req.body.post,
+            published: req.body.published,
+            _id: req.params.id,
+        });
+
+        if (!errors.isEmpty()) {
+            res.status(400).json({
+                post: post,
+                errors: errors,
+            });
+            return;
+        } else {
+            Post.findByIdAndUpdate(post._id, post, {new: true}, (err, updatedPost) => {
+                if (err) {
+                    return next(err);
+                }
+                res.status(200).json(updatedPost);
+            })
+        }
+    }
+];
+
 // adminPost_detail
 exports.adminDashboard = (req, res) => {
     res.json({
