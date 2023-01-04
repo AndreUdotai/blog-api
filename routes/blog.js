@@ -1,15 +1,18 @@
 var express = require('express');
 var router = express.Router();
 
+// Require blog controller module
+const blog_controller = require("../controllers/blogController");
+
 /* GET home page. */
-router.get('/', function(req, res, next) {
-  res.redirect('/home');
-});
+// router.get('/', function(req, res, next) {
+//   res.redirect('/home');
+// });
 
-router.get('/home', blog_controller.post_list);
+// router.get('/home', blog_controller.post_list);
 
-router.get('/post/:id', blog_controller.post_detail);
+// router.get('/post/:id', blog_controller.post_detail);
 
-router.post('/post/:id/comment/create', blog_controller.comment_create_post)
+// router.post('/post/:id/comment/create', blog_controller.comment_create_post)
 
 module.exports = router;
