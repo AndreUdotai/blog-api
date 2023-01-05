@@ -6,6 +6,7 @@ import { body, validationResult } from 'express-validator';
 import { ResultWithContext } from 'express-validator/src/chain';
 import passport from 'passport';
 import async from 'async';
+import jwt from 'jsonwebtoken';
 
 exports.adminUser_create_post = [
     // validate and sanitize fields.
@@ -18,7 +19,7 @@ exports.adminUser_create_post = [
         .isLength({ min: 6 })
         .withMessage('Password must be at least 6 characters long'),
     body('confirmPassword')
-        .isLength({min: 1})
+        .isLength({ min: 1 })
         .withMessage('Confirm password!')
         .custom((value, { req }) => value === req.body.password)
         .withMessage('Passwords do not match!'),
@@ -34,7 +35,7 @@ exports.adminUser_create_post = [
             password: req.body.password,
         });
 
-        if(!errors.isEmpty()) {
+        if (!errors.isEmpty()) {
             // There are errors. Render form again with sanitized values/errors messages.
             res.status(400).json({
                 user: user,
@@ -54,7 +55,7 @@ exports.adminUser_create_post = [
                         // User with same username already exist, Render form again with sanitized values/errors messages.
                         res.status(400).json({
                             user: user,
-                            usernameError: "Username already exists!",
+                            usernameError: 'Username already exists!',
                         });
                         return;
                     } else {
@@ -72,8 +73,8 @@ exports.adminUser_create_post = [
                                     }
                                     res.status(200).json({
                                         message: 'User created successfully',
-                                        user: user
-                                    })
+                                        user: user,
+                                    });
                                 });
                             },
                         );
@@ -84,26 +85,23 @@ exports.adminUser_create_post = [
     },
 ];
 
-
 exports.adminUser_list = (req, res, next) => {
-    User.find({})
-        .exec((err, users) => {
-            if (err) {
-                return next(err);
-            }
-            res.status(200).json(users)
-        })
-}
+    User.find({}).exec((err, users) => {
+        if (err) {
+            return next(err);
+        }
+        res.status(200).json(users);
+    });
+};
 
 exports.adminUser_detail = (req, res, next) => {
-    User.findById(req.params.id)
-        .exec((err, user) => {
-            if (err) {
-                return next(err);
-            }
-            res.status(200).json(user)
-        })
-}
+    User.findById(req.params.id).exec((err, user) => {
+        if (err) {
+            return next(err);
+        }
+        res.status(200).json(user);
+    });
+};
 
 exports.adminUser_update_post = [
     //Validate and sanitize fields.
@@ -136,14 +134,19 @@ exports.adminUser_update_post = [
             });
             return;
         } else {
-            User.findByIdAndUpdate(user._id, user, {new: true}, (err, updatedUser) => {
-                if (err) {
-                    return next(err);
-                }
-                res.status(200).json(updatedUser);
-            });
+            User.findByIdAndUpdate(
+                user._id,
+                user,
+                { new: true },
+                (err, updatedUser) => {
+                    if (err) {
+                        return next(err);
+                    }
+                    res.status(200).json(updatedUser);
+                },
+            );
         }
-    }
+    },
 ];
 
 exports.adminUser_login = (req, res) => {
@@ -151,11 +154,35 @@ exports.adminUser_login = (req, res) => {
     if (!username || !password) {
         res.status(400).json(req.body);
     } else {
-        passport.authenticate('local', {
+        passport.authenticate(
+            'local',
+            { session: false },
+            (err, user, info) => {
+                if (err || !user) {
+                    return res.status(400).json({
+                        message: 'Login Unsuccessful!',
+                        user: user,
+                    });
+                }
+                req.login(user, { session: false }, (err) => {
+                    if (err) {
+                        res.send(err);
+                    }
+                    // generate a signed son web token with the contents of user object and return it in the response
+                    const token = jwt.sign({user}, 'secretKey');
+                    return res.json({ user, token });
 
-        })(req, res);
+                    // jwt.sign(user, 'secretkey', (err, token) => {
+                    //     res.json({
+                    //         user: user,
+                    //         token: token
+                    //     })
+                    // })
+                });
+            },
+        )(req, res);
     }
-}
+};
 
 exports.adminUser_logout = (req, res, next) => {
     req.logout(function (err) {
@@ -163,9 +190,9 @@ exports.adminUser_logout = (req, res, next) => {
             return next(err);
         }
         res.status(200).json({
-            message: "Successfully signed out"
-        })
-    })
+            message: 'Successfully signed out',
+        });
+    });
 };
 
 // POST
@@ -174,7 +201,7 @@ exports.adminUser_logout = (req, res, next) => {
 exports.adminPost_create = [
     body('title', 'Title must not be empty.').trim().isLength({ min: 1 }),
     body('post', 'Post must not be empty.').trim().isLength({ min: 1 }),
-    
+
     (req, res, next) => {
         const errors = validationResult(req);
 
@@ -183,7 +210,7 @@ exports.adminPost_create = [
             post: req.body.post,
         });
 
-        if(!errors.isEmpty()) {
+        if (!errors.isEmpty()) {
             res.status(400).json({
                 post: post,
                 errors: errors,
@@ -195,9 +222,9 @@ exports.adminPost_create = [
                     return next(err);
                 }
                 res.status(200).json(post);
-            })
+            });
         }
-    }
+    },
 ];
 
 exports.adminPost_list = (req, res, next) => {
@@ -208,8 +235,8 @@ exports.adminPost_list = (req, res, next) => {
                 return next(err);
             }
             res.status(200).json(posts);
-        })
-}
+        });
+};
 
 exports.adminPost_update = [
     body('title', 'Title must not be empty.').trim().isLength({ min: 1 }),
@@ -232,35 +259,50 @@ exports.adminPost_update = [
             });
             return;
         } else {
-            Post.findByIdAndUpdate(post._id, post, {new: true}, (err, updatedPost) => {
-                if (err) {
-                    return next(err);
-                }
-                res.status(200).json(updatedPost);
-            })
+            Post.findByIdAndUpdate(
+                post._id,
+                post,
+                { new: true },
+                (err, updatedPost) => {
+                    if (err) {
+                        return next(err);
+                    }
+                    res.status(200).json(updatedPost);
+                },
+            );
         }
-    }
+    },
 ];
 
 // adminPost_detail
 exports.adminDashboard = (req, res, next) => {
-    async.parallel(
-        {
-            post_count(callback) {
-                Post.countDocuments({}, callback);
-            },
-            user_count(callback) {
-                User.countDocuments({}, callback);
-            },
-            comment_count(callback) {
-                Comment.countDocuments({}, callback);
-            },
-        },
-        (err, results) => {
-            if (err) {
-                return next(err)
-            }
-            res.status(200).json(results);
+    jwt.verify(req.token, 'secretKey', (err, authData) => {
+        if (err) {
+            res.json({
+                message: "You are not allowed access!"
+            });
+        } else {
+            async.parallel(
+                {
+                    post_count(callback) {
+                        Post.countDocuments({}, callback);
+                    },
+                    user_count(callback) {
+                        User.countDocuments({}, callback);
+                    },
+                    comment_count(callback) {
+                        Comment.countDocuments({}, callback);
+                    },
+                },
+                (err, results) => {
+                    if (err) {
+                        return next(err);
+                    }
+                    res.status(200).json({results, authData});
+                }
+        
+            );
         }
-    )
-}
+    })
+    
+};

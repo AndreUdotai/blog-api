@@ -1,6 +1,7 @@
 var express = require('express');
 // const { route } = require('../../andres-club/app');
 var router = express.Router();
+const { verifyToken } = require("../auth/protect");
 
 // Require admin controller module
 const admin_controller = require("../controllers/adminController");
@@ -19,14 +20,14 @@ router.get("/users", admin_controller.adminUser_list);
 // POST requst for login
 router.post("/users/login", admin_controller.adminUser_login);
 
+// GET request for logout
+router.get("/users/logout", admin_controller.adminUser_logout);
+
 // GET request for one admin user
 router.get("/users/:id", admin_controller.adminUser_detail);
 
 // POST request to update an admin user
 router.post("/users/:id/update", admin_controller.adminUser_update_post);
-
-// GET request for logout
-router.get("/users/logout", admin_controller.adminUser_logout);
 
 /// ADMIN POST ROUTES
 
@@ -45,6 +46,6 @@ router.post("/posts/:id/update", admin_controller.adminPost_update);
 /// ADMIN DASHBAORD ROUTE
 
 // GET request for dashboard counts
-router.get("/dashboard", admin_controller.adminDashboard);
+router.get("/dashboard", verifyToken, admin_controller.adminDashboard);
 
 module.exports = router;
