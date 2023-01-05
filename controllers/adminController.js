@@ -5,6 +5,7 @@ import bcrypt from 'bcryptjs';
 import { body, validationResult } from 'express-validator';
 import { ResultWithContext } from 'express-validator/src/chain';
 import passport from 'passport';
+import async from 'async';
 
 exports.adminUser_create_post = [
     // validate and sanitize fields.
@@ -242,8 +243,24 @@ exports.adminPost_update = [
 ];
 
 // adminPost_detail
-exports.adminDashboard = (req, res) => {
-    res.json({
-        message: "User successfully created"
-    })
+exports.adminDashboard = (req, res, next) => {
+    async.parallel(
+        {
+            post_count(callback) {
+                Post.countDocuments({}, callback);
+            },
+            user_count(callback) {
+                User.countDocuments({}, callback);
+            },
+            comment_count(callback) {
+                Comment.countDocuments({}, callback);
+            },
+        },
+        (err, results) => {
+            if (err) {
+                return next(err)
+            }
+            res.status(200).json(results);
+        }
+    )
 }
