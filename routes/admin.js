@@ -1,5 +1,4 @@
 var express = require('express');
-// const { route } = require('../../andres-club/app');
 var router = express.Router();
 const { verifyToken } = require("../auth/protect");
 
@@ -7,9 +6,6 @@ const { verifyToken } = require("../auth/protect");
 const admin_controller = require("../controllers/adminController");
 
 /// ADMIN USER ROUTES
-
-// GET request for creating an admin user
-// router.get("/", admin_controller.adminUser_create_get);
 
 // POST request for creating an admin user
 router.post("/user/register", admin_controller.adminUser_create_post);
@@ -19,9 +15,6 @@ router.get("/users", admin_controller.adminUser_list);
 
 // POST requst for login
 router.post("/user/login", admin_controller.adminUser_login);
-
-// GET request for logout
-router.get("/user/logout", admin_controller.adminUser_logout);
 
 // GET request for one admin user
 router.get("/user/:id", admin_controller.adminUser_detail);

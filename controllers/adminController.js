@@ -3,7 +3,6 @@ import Post from '../models/Post';
 import Comment from '../models/Comment';
 import bcrypt from 'bcryptjs';
 import { body, validationResult } from 'express-validator';
-import { ResultWithContext } from 'express-validator/src/chain';
 import passport from 'passport';
 import async from 'async';
 import jwt from 'jsonwebtoken';
@@ -36,7 +35,7 @@ exports.adminUser_create_post = [
         });
 
         if (!errors.isEmpty()) {
-            // There are errors. Render form again with sanitized values/errors messages.
+            // There are errors.
             res.status(400).json({
                 user: user,
                 errors: errors,
@@ -127,7 +126,7 @@ exports.adminUser_update_post = [
         });
 
         if (!errors.isEmpty()) {
-            // There are errors, render form again with sanitized values/error messages.
+            // There are errors.
             res.status(400).json({
                 user: user,
                 errors: errors,
@@ -184,19 +183,7 @@ exports.adminUser_login = (req, res) => {
     }
 };
 
-exports.adminUser_logout = (req, res, next) => {
-    req.logout(function (err) {
-        if (err) {
-            return next(err);
-        }
-        res.status(200).json({
-            message: 'Successfully signed out',
-        });
-    });
-};
-
 // POST
-// title, post, published, comments, timestamp
 
 exports.adminPost_create = [
     body('title', 'Title must not be empty.').trim().isLength({ min: 1 }),

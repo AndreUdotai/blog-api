@@ -9,7 +9,7 @@ const blog_controller = require("../controllers/blogController");
 //   res.redirect('/home');
 // });
 
-router.get('/', blog_controller.post_list);
+router.get('/posts', blog_controller.post_list);
 
 router.get('/post/:id', blog_controller.post_detail);
 
