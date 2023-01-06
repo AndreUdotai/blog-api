@@ -15,6 +15,10 @@ const CommentSchema = new Schema({
         type: String,
         required: true,
     },
+    post: {
+        type: Schema.Types.ObjectId,
+        ref: 'Post',
+    },
     timestamp: {
         type: Date,
         default: Date.now,

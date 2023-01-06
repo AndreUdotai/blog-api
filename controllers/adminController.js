@@ -24,7 +24,7 @@ exports.adminUser_create_post = [
         .custom((value, { req }) => value === req.body.password)
         .withMessage('Passwords do not match!'),
 
-    // Process request after validation and sanitation.
+    // Process request after validation and sanitization.
     (req, res, next) => {
         // Extract the validation errors from a request.
         const errors = validationResult(req);
