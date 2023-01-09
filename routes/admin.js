@@ -1,5 +1,6 @@
-var express = require('express');
+import express from 'express';
 var router = express.Router();
+const passport = require('passport');
 const { verifyToken } = require("../auth/protect");
 
 // Require admin controller module
@@ -11,27 +12,27 @@ const admin_controller = require("../controllers/adminController");
 router.post("/user/register", admin_controller.adminUser_create_post);
 
 // GET request for list of all admin users
-router.get("/users", admin_controller.adminUser_list);
+router.get("/users", verifyToken, admin_controller.adminUser_list);
 
 // POST requst for login
 router.post("/user/login", admin_controller.adminUser_login);
 
 // GET request for one admin user
-router.get("/user/:id", admin_controller.adminUser_detail);
+router.get("/user/:id", verifyToken, admin_controller.adminUser_detail);
 
 // POST request to update an admin user
-router.post("/user/:id/update", admin_controller.adminUser_update_post);
+router.post("/user/:id/update", verifyToken, admin_controller.adminUser_update_post);
 
 /// ADMIN POST ROUTES
 
 // POST request for creating a post
-router.post("/post/create", admin_controller.adminPost_create);
+router.post("/post/create", verifyToken, admin_controller.adminPost_create);
 
 // GET request for listing all posts
-router.get("/posts", admin_controller.adminPost_list);
+router.get("/posts", verifyToken, admin_controller.adminPost_list);
 
 // POST requst for updating post
-router.post("/post/:id/update", admin_controller.adminPost_update);
+router.post("/post/:id/update", verifyToken, admin_controller.adminPost_update);
 
 /// ADMIN DASHBAORD ROUTE
 

@@ -85,21 +85,34 @@ exports.adminUser_create_post = [
 ];
 
 exports.adminUser_list = (req, res, next) => {
-    User.find({}).exec((err, users) => {
+    jwt.verify(req.token, 'secretKey', (err, authData) => {
         if (err) {
-            return next(err);
+            res.sendStatus(403);
+        } else {
+            User.find({}).exec((err, users) => {
+                if (err) {
+                    return next(err);
+                }
+                res.status(200).json({ users, authData });
+            });
         }
-        res.status(200).json(users);
     });
 };
 
 exports.adminUser_detail = (req, res, next) => {
+    jwt.verify(req.token, 'secretKey', (err, authData) => {
+        if (err) {
+            res.json({
+                message: 'You are not allowed access!',
+            });
+        } else {
     User.findById(req.params.id).exec((err, user) => {
         if (err) {
             return next(err);
         }
         res.status(200).json(user);
     });
+}})
 };
 
 exports.adminUser_update_post = [
@@ -133,6 +146,12 @@ exports.adminUser_update_post = [
             });
             return;
         } else {
+            jwt.verify(req.token, 'secretKey', (err, authData) => {
+                if (err) {
+                    res.json({
+                        message: 'You are not allowed access!',
+                    });
+                } else {
             User.findByIdAndUpdate(
                 user._id,
                 user,
@@ -144,6 +163,7 @@ exports.adminUser_update_post = [
                     res.status(200).json(updatedUser);
                 },
             );
+                }})
         }
     },
 ];
@@ -168,7 +188,7 @@ exports.adminUser_login = (req, res) => {
                         res.send(err);
                     }
                     // generate a signed son web token with the contents of user object and return it in the response
-                    const token = jwt.sign({user}, 'secretKey');
+                    const token = jwt.sign({ user }, 'secretKey');
                     return res.json({ user, token });
 
                     // jwt.sign(user, 'secretkey', (err, token) => {
@@ -204,25 +224,38 @@ exports.adminPost_create = [
             });
             return;
         } else {
-            post.save((err) => {
+            jwt.verify(req.token, 'secretKey', (err, authData) => {
                 if (err) {
-                    return next(err);
-                }
-                res.status(200).json(post);
-            });
+                    res.json({
+                        message: 'You are not allowed access!',
+                    });
+                } else {
+                    post.save((err) => {
+                        if (err) {
+                            return next(err);
+                        }
+                        res.status(200).json(post);
+                    });
+                }})
+
         }
     },
 ];
 
 exports.adminPost_list = (req, res, next) => {
-    Post.find({})
-        .populate('comments')
-        .exec((err, posts) => {
-            if (err) {
-                return next(err);
-            }
-            res.status(200).json(posts);
-        });
+    jwt.verify(req.token, 'secretKey', (err, authData) => {
+        if (err) {
+            res.json({
+                message: 'You are not allowed access!',
+            });
+        } else {
+            Post.find({}).exec((err, posts) => {
+                if (err) {
+                    return next(err);
+                }
+                res.status(200).json(posts);
+            });
+        }});
 };
 
 exports.adminPost_update = [
@@ -246,6 +279,12 @@ exports.adminPost_update = [
             });
             return;
         } else {
+            jwt.verify(req.token, 'secretKey', (err, authData) => {
+                if (err) {
+                    res.json({
+                        message: 'You are not allowed access!',
+                    });
+                } else {
             Post.findByIdAndUpdate(
                 post._id,
                 post,
@@ -257,6 +296,7 @@ exports.adminPost_update = [
                     res.status(200).json(updatedPost);
                 },
             );
+        }})
         }
     },
 ];
@@ -266,7 +306,7 @@ exports.adminDashboard = (req, res, next) => {
     jwt.verify(req.token, 'secretKey', (err, authData) => {
         if (err) {
             res.json({
-                message: "You are not allowed access!"
+                message: 'You are not allowed access!',
             });
         } else {
             async.parallel(
@@ -285,11 +325,9 @@ exports.adminDashboard = (req, res, next) => {
                     if (err) {
                         return next(err);
                     }
-                    res.status(200).json({results, authData});
-                }
-        
+                    res.status(200).json({ results, authData });
+                },
             );
         }
-    })
-    
+    });
 };
