@@ -326,6 +326,7 @@ exports.adminDashboard = (req, res, next) => {
                         return next(err);
                     }
                     res.status(200).json({ results, authData });
+                    // res.status(200).json({ results });
                 },
             );
         }
