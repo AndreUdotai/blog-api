@@ -31,12 +31,13 @@ router.post("/post/create", verifyToken, admin_controller.adminPost_create);
 // GET request for listing all posts
 router.get("/posts", verifyToken, admin_controller.adminPost_list);
 
-// POST requst for updating post
+// POST request for updating post
 router.post("/post/:id/update", verifyToken, admin_controller.adminPost_update);
 
 /// ADMIN DASHBAORD ROUTE
 
 // GET request for dashboard counts
 router.get("/dashboard", verifyToken, admin_controller.adminDashboard);
+// router.get("/dashboard", admin_controller.adminDashboard);
 
 module.exports = router;
