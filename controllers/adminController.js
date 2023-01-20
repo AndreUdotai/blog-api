@@ -253,7 +253,7 @@ exports.adminPost_list = (req, res, next) => {
                 if (err) {
                     return next(err);
                 }
-                res.status(200).json(posts);
+                res.status(200).json({posts, authData});
             });
         }});
 };
