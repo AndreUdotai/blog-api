@@ -253,7 +253,7 @@ exports.adminPost_list = (req, res, next) => {
                 if (err) {
                     return next(err);
                 }
-                res.status(200).json({posts, authData});
+                res.status(200).json(posts);
             });
         }});
 };
@@ -326,7 +326,6 @@ exports.adminDashboard = (req, res, next) => {
                         return next(err);
                     }
                     res.status(200).json({ results, authData });
-                    // res.status(200).json({ results });
                 },
             );
         }
