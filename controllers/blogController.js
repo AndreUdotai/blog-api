@@ -21,7 +21,7 @@ exports.post_detail = (req, res, next) => {
                     .exec(callback);
             },
             post_comments(callback) {
-                Comment.find({ post: req.params.id }, 'username email comment timestamp')
+                Comment.find({ post: req.params.id }, 'username email comment timestamp post')
                     .exec(callback);
             },
         },
