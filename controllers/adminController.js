@@ -106,13 +106,14 @@ exports.adminUser_detail = (req, res, next) => {
                 message: 'You are not allowed access!',
             });
         } else {
-    User.findById(req.params.id).exec((err, user) => {
-        if (err) {
-            return next(err);
+            User.findById(req.params.id).exec((err, user) => {
+                if (err) {
+                    return next(err);
+                }
+                res.status(200).json(user);
+            });
         }
-        res.status(200).json(user);
     });
-}})
 };
 
 exports.adminUser_update_post = [
@@ -152,18 +153,19 @@ exports.adminUser_update_post = [
                         message: 'You are not allowed access!',
                     });
                 } else {
-            User.findByIdAndUpdate(
-                user._id,
-                user,
-                { new: true },
-                (err, updatedUser) => {
-                    if (err) {
-                        return next(err);
-                    }
-                    res.status(200).json(updatedUser);
-                },
-            );
-                }})
+                    User.findByIdAndUpdate(
+                        user._id,
+                        user,
+                        { new: true },
+                        (err, updatedUser) => {
+                            if (err) {
+                                return next(err);
+                            }
+                            res.status(200).json(updatedUser);
+                        },
+                    );
+                }
+            });
         }
     },
 ];
@@ -236,8 +238,8 @@ exports.adminPost_create = [
                         }
                         res.status(200).json(post);
                     });
-                }})
-
+                }
+            });
         }
     },
 ];
@@ -255,7 +257,8 @@ exports.adminPost_list = (req, res, next) => {
                 }
                 res.status(200).json(posts);
             });
-        }});
+        }
+    });
 };
 
 exports.adminPost_update = [
@@ -285,18 +288,19 @@ exports.adminPost_update = [
                         message: 'You are not allowed access!',
                     });
                 } else {
-            Post.findByIdAndUpdate(
-                post._id,
-                post,
-                { new: true },
-                (err, updatedPost) => {
-                    if (err) {
-                        return next(err);
-                    }
-                    res.status(200).json(updatedPost);
-                },
-            );
-        }})
+                    Post.findByIdAndUpdate(
+                        post._id,
+                        post,
+                        { new: true },
+                        (err, updatedPost) => {
+                            if (err) {
+                                return next(err);
+                            }
+                            res.status(200).json(updatedPost);
+                        },
+                    );
+                }
+            });
         }
     },
 ];
@@ -331,3 +335,18 @@ exports.adminDashboard = (req, res, next) => {
         }
     });
 };
+
+// adminPost_publish
+// exports.adminPost_publish_update = (req, res, next) => {
+//     jwt.verify(req.token, 'secretKey', (err, authData) => {
+//         if (err) {
+//             res.json({
+//                 message: 'You are not allowed access!',
+//             });
+//         } else {
+//             Post.findOneAndUpdate({_id: req.params.id }, [{$set:{publish:}}])
+//         }
+//     })
+// };
+
+// .findOneAndUpdate({_id: day.id},[{$set:{present:{$eq:[false,"$present"]}}}]);
