@@ -40,4 +40,8 @@ router.post("/post/:id/update", verifyToken, admin_controller.adminPost_update);
 router.get("/dashboard", verifyToken, admin_controller.adminDashboard);
 // router.get("/dashboard", admin_controller.adminDashboard);
 
+// POST request for updating published status of posts to true/false
+router.post("/post/:id/published/update/true", verifyToken, admin_controller.adminPost_publish_update_true);
+router.post("/post/:id/published/update/false", verifyToken, admin_controller.adminPost_publish_update_false);
+
 module.exports = router;

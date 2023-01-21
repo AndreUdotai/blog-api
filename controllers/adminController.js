@@ -255,7 +255,7 @@ exports.adminPost_list = (req, res, next) => {
                 if (err) {
                     return next(err);
                 }
-                res.status(200).json({posts, authData});
+                res.status(200).json({ posts, authData });
             });
         }
     });
@@ -337,16 +337,58 @@ exports.adminDashboard = (req, res, next) => {
 };
 
 // adminPost_publish
-// exports.adminPost_publish_update = (req, res, next) => {
-//     jwt.verify(req.token, 'secretKey', (err, authData) => {
-//         if (err) {
-//             res.json({
-//                 message: 'You are not allowed access!',
-//             });
-//         } else {
-//             Post.findOneAndUpdate({_id: req.params.id }, [{$set:{publish:}}])
-//         }
-//     })
-// };
+exports.adminPost_publish_update_true = (req, res, next) => {
+    jwt.verify(req.token, 'secretKey', (err, authData) => {
+        if (err) {
+            res.json({
+                message: 'You are not allowed access!',
+            });
+        } else {
+            Post.updateOne(
+                { _id: req.params.id },
+                { $set: { published: true } },
+                (err) => {
+                    if (err) {
+                        return next(err);
+                    }
+                    // Successful
 
-// .findOneAndUpdate({_id: day.id},[{$set:{present:{$eq:[false,"$present"]}}}]);
+                    Post.find({}).exec((err, posts) => {
+                        if (err) {
+                            return next(err);
+                        }
+                        res.status(200).json({ posts, authData });
+                    });
+                },
+            );
+        }
+    });
+};
+
+// adminPost_publish
+exports.adminPost_publish_update_false = (req, res, next) => {
+    jwt.verify(req.token, 'secretKey', (err, authData) => {
+        if (err) {
+            res.json({
+                message: 'You are not allowed access!',
+            });
+        } else {
+            Post.updateOne(
+                { _id: req.params.id },
+                { $set: { published: false } },
+                (err) => {
+                    if (err) {
+                        return next(err);
+                    }
+                    // Successful
+                    Post.find({}).exec((err, posts) => {
+                        if (err) {
+                            return next(err);
+                        }
+                        res.status(200).json({ posts, authData });
+                    });
+                },
+            );
+        }
+    });
+};
