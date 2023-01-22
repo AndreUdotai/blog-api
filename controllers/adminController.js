@@ -236,7 +236,7 @@ exports.adminPost_create = [
                         if (err) {
                             return next(err);
                         }
-                        res.status(200).json(post);
+                        res.status(200).json({post, authData});
                     });
                 }
             });
