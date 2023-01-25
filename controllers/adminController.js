@@ -161,7 +161,7 @@ exports.adminUser_update_post = [
                             if (err) {
                                 return next(err);
                             }
-                            res.status(200).json(updatedUser);
+                            res.status(200).json({updatedUser, authData});
                         },
                     );
                 }
