@@ -23,6 +23,10 @@ router.get("/user/:id", verifyToken, admin_controller.adminUser_detail);
 // POST request to update an admin user
 router.post("/user/:id/update", verifyToken, admin_controller.adminUser_update_post);
 
+// POST request for updating published status of posts to true/false
+router.post("/post/:id/published/update/true", verifyToken, admin_controller.adminPost_publish_update_true);
+router.post("/post/:id/published/update/false", verifyToken, admin_controller.adminPost_publish_update_false);
+
 /// ADMIN POST ROUTES
 
 // POST request for creating a post
@@ -30,6 +34,9 @@ router.post("/post/create", verifyToken, admin_controller.adminPost_create);
 
 // GET request for listing all posts
 router.get("/posts", verifyToken, admin_controller.adminPost_list);
+
+// GET request for updating post
+router.get("/post/:id/update", verifyToken, admin_controller.adminPost_update_get);
 
 // POST request for updating post
 router.post("/post/:id/update", verifyToken, admin_controller.adminPost_update);
@@ -39,9 +46,5 @@ router.post("/post/:id/update", verifyToken, admin_controller.adminPost_update);
 // GET request for dashboard counts
 router.get("/dashboard", verifyToken, admin_controller.adminDashboard);
 // router.get("/dashboard", admin_controller.adminDashboard);
-
-// POST request for updating published status of posts to true/false
-router.post("/post/:id/published/update/true", verifyToken, admin_controller.adminPost_publish_update_true);
-router.post("/post/:id/published/update/false", verifyToken, admin_controller.adminPost_publish_update_false);
 
 module.exports = router;

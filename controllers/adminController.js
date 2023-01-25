@@ -385,3 +385,26 @@ exports.adminPost_publish_update_false = (req, res, next) => {
         }
     });
 };
+
+
+exports.adminPost_update_get = (req, res, next) => {
+    jwt.verify(req.token, 'secretKey', (err, authData) => {
+        if (err) {
+            res.json({
+                message: 'You are not allowed access!',
+            });
+        } else {
+            Post.findById(req.params.id, (err, post) => {
+                if (err) {
+                    return next(err);
+                }
+                if (post == null) {
+                    // No results.
+                    res.status(404).json({message: "Post not found!"})
+                }
+                // Success
+                res.status(200).json({ post, authData});
+            })
+        }
+    });
+};
