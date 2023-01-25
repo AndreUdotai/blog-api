@@ -192,13 +192,6 @@ exports.adminUser_login = (req, res) => {
                     // generate a signed son web token with the contents of user object and return it in the response
                     const token = jwt.sign({ user }, 'secretKey');
                     return res.json({ user, token });
-
-                    // jwt.sign(user, 'secretkey', (err, token) => {
-                    //     res.json({
-                    //         user: user,
-                    //         token: token
-                    //     })
-                    // })
                 });
             },
         )(req, res);
