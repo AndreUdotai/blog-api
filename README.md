@@ -21,6 +21,37 @@
 * Vanilla Javascript
 * HTML & CSS
 
+## Run Locally
+
+Clone the project
+
+```bash
+  git clone https://github.com/AndreUdotai/blog-api.git
+```
+
+Go to the project directory
+
+```bash
+  cd blog-api
+```
+
+Install dependencies
+
+```bash
+  npm install
+```
+
+Start the server
+
+```bash
+  npm run start
+```
+
+
+## Authors
+
+- [@AndreUdotai](https://github.com/AndreUdotai)
+
 ## License
 This project is licensed under the MIT License
 
